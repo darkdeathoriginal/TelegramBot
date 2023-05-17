@@ -3,6 +3,7 @@ from pyrogram import Client, filters
 import base64
 from dotenv import load_dotenv
 import os
+from flask import Flask, send_from_directory
 
 load_dotenv()
 
@@ -11,6 +12,16 @@ api_hash = os.getenv("API_HASH")
 webhook_url = os.getenv("WEBHOOK_URL")
 
 app = Client("my_account",api_id=api_id, api_hash=api_hash)
+
+
+flask_app = Flask(__name__)
+
+@flask_app.route('/downloads/<path:filename>')
+def download_file(filename):
+    return send_from_directory('./downloads', filename, as_attachment=True)
+
+
+
 @app.on_message(~filters.me)
 async def start(client, message):
     return 0
@@ -59,4 +70,6 @@ async def edit(client, message):
     )
 
 
-app.run()
+if __name__ == '__main__':
+    flask_app.run(port=5555)
+    app.run()
