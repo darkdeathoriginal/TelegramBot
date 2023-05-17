@@ -1,9 +1,10 @@
 import requests
+import multiprocessing
 from pyrogram import Client, filters
-import base64
 from dotenv import load_dotenv
 import os
 from flask import Flask, send_from_directory
+from gevent.pywsgi import WSGIServer
 
 load_dotenv()
 
@@ -68,6 +69,19 @@ async def edit(client, message):
     )
 
 
-if __name__ == '__main__':
-    flask_app.run(port=5555)
+def run_telegram():
     app.run()
+
+def run_flask():
+    http_server = WSGIServer(('0.0.0.0', 5555), flask_app)
+    http_server.serve_forever()
+
+if __name__ == '__main__':
+    telegram_process = multiprocessing.Process(target=run_telegram)
+    flask_process = multiprocessing.Process(target=run_flask)
+
+    telegram_process.start()
+    flask_process.start()
+
+    telegram_process.join()
+    flask_process.join()
