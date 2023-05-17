@@ -38,12 +38,10 @@ async def send(client, message):
     Mime = message.reply_to_message.document.mime_type
     await app.download_media(message.reply_to_message, file_name="temp.mp4")
     print("download finnished")
-    with open("./downloads/temp.mp4", "rb") as file:
-        file_data = file.read()
 
     post_data = {
         "jid": "919072215994@s.whatsapp.net",
-        "buffer": base64.b64encode(file_data).decode("utf-8"),
+        "buffer": "temp",
         "filename": fileName,
         "mime": Mime,
     }
